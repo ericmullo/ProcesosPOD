@@ -30,11 +30,16 @@ jobs:
       - name: Verificar acceso y capturar Grafana
         run: |
           kubectl port-forward service/grafana 3000:3000 > /tmp/grafana-captura.log 2>&1 &
-          for i in {1..30}; do
-            if curl --fail --silent --max-time 3 http://127.0.0.1:3000/api/health -o evidencias/salud-http.json && grep -q '"database"' evidencias/salud-http.json; then break; fi
+          for i in {1..60}; do
+            if curl --fail --silent --max-time 5 http://127.0.0.1:3000/api/health -o evidencias/salud-http.json && grep -q '"database"' evidencias/salud-http.json; then break; fi
             sleep 2
           done
-          grep -q '"database"' evidencias/salud-http.json
+          if ! grep -q '"database"' evidencias/salud-http.json; then
+            cat /tmp/grafana-captura.log
+            kubectl get pods -o wide
+            kubectl logs deployment/grafana --tail=80
+            exit 1
+          fi
           npm install --no-save playwright
           npx playwright install --with-deps chromium
           node scripts/capturar-grafana.cjs
