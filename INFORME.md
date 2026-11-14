@@ -10,44 +10,40 @@ Desplegar una plataforma distinta de la utilizada en clase, aplicar los concepto
 
 | Recurso | Archivo | Función |
 | --- | --- | --- |
-| Namespace `grafana-demo` | `k8s/namespace.yaml` | Aísla los recursos del ejercicio. |
-| Deployment `grafana` | `k8s/deployment.yaml` | Declara dos réplicas, imagen, recursos y comprobaciones de salud. |
+| Deployment `grafana` | `k8s/deployment.yaml` | Indica la imagen de Grafana y que deben existir dos Pods. |
 | ReplicaSet | Creado por Kubernetes | Mantiene en ejecución los dos Pods deseados. Su nombre incluye un hash y varía por despliegue. |
 | Service `grafana` | `k8s/service.yaml` | Reparte tráfico entre los Pods y expone el puerto 30030 del nodo. |
 
-El Deployment usa `grafana/grafana:12.1.0`, dos réplicas y estrategia `RollingUpdate`. Las probes HTTP consultan `/api/health`. El acceso anónimo tiene rol `Viewer` para que la interfaz se pueda mostrar sin publicar una contraseña.
+El Deployment usa `grafana/grafana:12.1.0` y pide dos réplicas. El acceso a la interfaz es de solo lectura y no requiere contraseña durante la práctica.
 
 ## 3. Procedimiento de despliegue
 
 ```powershell
-kubectl apply -f k8s/namespace.yaml
 kubectl apply -f k8s/deployment.yaml
 kubectl apply -f k8s/service.yaml
-kubectl -n grafana-demo rollout status deployment/grafana --timeout=300s
-kubectl -n grafana-demo get deployment,replicaset,pods,service -o wide
+kubectl get deployment,replicaset,pods,service
 ```
 
 Para acceder a la plataforma, abrir `http://localhost:30030` en Docker Desktop con Kubernetes. Como alternativa compatible con otros clústeres:
 
 ```powershell
-kubectl -n grafana-demo port-forward service/grafana 3000:3000
+kubectl port-forward service/grafana 3000:3000
 ```
 
-Abrir `http://localhost:3000`. La ruta `/api/health` debe responder con estado HTTP 200.
+Abrir `http://localhost:3000` para ver la pantalla principal de Grafana.
 
 ## 4. Aplicación de los conceptos
 
-Un **Pod** ejecuta el contenedor de Grafana. El **ReplicaSet** procura que existan dos Pods que cumplan el selector `app: grafana`. El **Deployment** administra el ReplicaSet y permite cambios declarativos, escalado y actualizaciones graduales. No se define un ReplicaSet manual porque el Deployment lo crea y controla automáticamente.
+Un **Pod** ejecuta Grafana. El **ReplicaSet** mantiene los dos Pods solicitados. El **Deployment** crea y controla ese ReplicaSet. Por eso no hace falta escribir un archivo separado para el ReplicaSet.
 
 El **Service** proporciona un punto de acceso estable aunque se reemplace un Pod. `NodePort` expone la aplicación mediante el puerto 30030; `port-forward` permite exponerla temporalmente en el equipo local.
 
 Para demostrar el escalado de 2 a 3 réplicas y volver al estado original:
 
 ```powershell
-kubectl -n grafana-demo scale deployment/grafana --replicas=3
-kubectl -n grafana-demo rollout status deployment/grafana --timeout=300s
-kubectl -n grafana-demo get deployment,replicaset,pods
-kubectl -n grafana-demo scale deployment/grafana --replicas=2
+kubectl scale deployment/grafana --replicas=3
+kubectl get deployment,replicaset,pods
+kubectl scale deployment/grafana --replicas=2
 ```
 
 ## 5. Usos de Grafana
@@ -69,7 +65,7 @@ Este ejercicio muestra la interfaz de Grafana. Para visualizar métricas reales 
 | Exposición de Grafana | Service `NodePort` `3000:30030/TCP`; `/api/health` devolvió `database: ok` | [salud-http.json](evidencias/salud-http.json) |
 | Escalado | Deployment y ReplicaSet `3/3` | [escalado.txt](evidencias/escalado.txt) |
 
-Tras iniciar Kubernetes, guardar las siguientes capturas en `evidencias/` y enlazarlas aquí:
+Capturas guardadas en `evidencias/`:
 
 1. [01-recursos.png](evidencias/01-recursos.png): imagen de la salida real de `kubectl` con `2/2`, ReplicaSet y NodePort.
 2. [02-grafana.png](evidencias/02-grafana.png): captura real de la interfaz de Grafana abierta en el navegador del runner.
@@ -87,7 +83,7 @@ El script `scripts/capturar-evidencias.ps1` guarda también la salida de Kuberne
 
 ## 7. Conclusión y límites
 
-La configuración declara dos instancias de Grafana gestionadas por un Deployment y su ReplicaSet, con acceso por Service. En este laboratorio cada réplica tiene almacenamiento SQLite local y efímero, por lo que los cambios hechos desde la interfaz pueden diferir entre Pods o perderse al reiniciarlos. Para producción se necesitarían base de datos y almacenamiento compartidos, autenticación y una exposición de red protegida.
+La práctica muestra dos Pods de Grafana administrados por un Deployment y un ReplicaSet. El Service permite abrir la interfaz. Como los datos se guardan dentro de cada Pod, esta configuración se usa solo para la demostración.
 
 ## Fuentes
 

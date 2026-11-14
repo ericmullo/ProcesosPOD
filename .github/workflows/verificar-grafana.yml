@@ -20,17 +20,16 @@ jobs:
         uses: helm/kind-action@v1.15.2
       - name: Desplegar Grafana
         run: |
-          kubectl apply -f k8s/namespace.yaml
           kubectl apply -f k8s/deployment.yaml
           kubectl apply -f k8s/service.yaml
-          kubectl -n grafana-demo rollout status deployment/grafana --timeout=600s
-          kubectl -n grafana-demo get deployment,replicaset,pods,service -o wide | tee evidencias/recursos.txt
-          kubectl -n grafana-demo describe deployment grafana > evidencias/deployment.txt
-          test "$(kubectl -n grafana-demo get deployment grafana -o jsonpath='{.status.readyReplicas}')" = 2
-          test "$(kubectl -n grafana-demo get replicasets -l app=grafana -o jsonpath='{.items[0].status.readyReplicas}')" = 2
+          kubectl rollout status deployment/grafana --timeout=600s
+          kubectl get deployment,replicaset,pods,service -o wide | tee evidencias/recursos.txt
+          kubectl describe deployment grafana > evidencias/deployment.txt
+          test "$(kubectl get deployment grafana -o jsonpath='{.status.readyReplicas}')" = 2
+          test "$(kubectl get replicasets -l app=grafana -o jsonpath='{.items[0].status.readyReplicas}')" = 2
       - name: Verificar exposición HTTP
         run: |
-          kubectl -n grafana-demo port-forward service/grafana 3000:3000 > /tmp/grafana-port-forward.log 2>&1 &
+          kubectl port-forward service/grafana 3000:3000 > /tmp/grafana-port-forward.log 2>&1 &
           for i in {1..30}; do
             if curl --fail --silent http://127.0.0.1:3000/api/health > evidencias/salud-http.json; then break; fi
             sleep 2
@@ -44,10 +43,10 @@ jobs:
           node scripts/capturar-salida.cjs evidencias/recursos.txt evidencias/01-recursos.png
       - name: Verificar escalado a tres réplicas
         run: |
-          kubectl -n grafana-demo scale deployment/grafana --replicas=3
-          kubectl -n grafana-demo rollout status deployment/grafana --timeout=600s
-          kubectl -n grafana-demo get deployment,replicaset,pods -o wide | tee evidencias/escalado.txt
-          test "$(kubectl -n grafana-demo get deployment grafana -o jsonpath='{.status.readyReplicas}')" = 3
+          kubectl scale deployment/grafana --replicas=3
+          kubectl rollout status deployment/grafana --timeout=600s
+          kubectl get deployment,replicaset,pods -o wide | tee evidencias/escalado.txt
+          test "$(kubectl get deployment grafana -o jsonpath='{.status.readyReplicas}')" = 3
           node scripts/capturar-salida.cjs evidencias/escalado.txt evidencias/03-escalado.png
       - name: Publicar evidencia como artefacto
         if: always()
