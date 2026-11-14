@@ -1,0 +1,64 @@
+name: Verificar Grafana en Kubernetes
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'evidencias/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Crear clúster kind
+        uses: helm/kind-action@v1.15.2
+      - name: Desplegar Grafana
+        run: |
+          kubectl apply -f k8s/namespace.yaml
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
+          kubectl -n grafana-demo rollout status deployment/grafana --timeout=600s
+          kubectl -n grafana-demo get deployment,replicaset,pods,service -o wide | tee evidencias/recursos.txt
+          kubectl -n grafana-demo describe deployment grafana > evidencias/deployment.txt
+          test "$(kubectl -n grafana-demo get deployment grafana -o jsonpath='{.status.readyReplicas}')" = 2
+          test "$(kubectl -n grafana-demo get replicasets -l app=grafana -o jsonpath='{.items[0].status.readyReplicas}')" = 2
+      - name: Verificar exposición HTTP
+        run: |
+          kubectl -n grafana-demo port-forward service/grafana 3000:3000 > /tmp/grafana-port-forward.log 2>&1 &
+          for i in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:3000/api/health > evidencias/salud-http.json; then break; fi
+            sleep 2
+          done
+          curl --fail --silent --show-error http://127.0.0.1:3000/api/health | tee evidencias/salud-http.json
+      - name: Capturar pantalla real de Grafana
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+          node scripts/capturar-grafana.cjs
+      - name: Verificar escalado a tres réplicas
+        run: |
+          kubectl -n grafana-demo scale deployment/grafana --replicas=3
+          kubectl -n grafana-demo rollout status deployment/grafana --timeout=600s
+          kubectl -n grafana-demo get deployment,replicaset,pods -o wide | tee evidencias/escalado.txt
+          test "$(kubectl -n grafana-demo get deployment grafana -o jsonpath='{.status.readyReplicas}')" = 3
+      - name: Publicar evidencia como artefacto
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidencia-grafana
+          path: evidencias/
+          if-no-files-found: warn
+      - name: Guardar evidencia en el repositorio
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add evidencias/
+          git commit -m "Guardar evidencia real de Grafana [skip ci]" || exit 0
+          git push
