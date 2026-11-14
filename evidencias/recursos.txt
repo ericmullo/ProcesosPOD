@@ -5,8 +5,8 @@ NAME                                 DESIRED   CURRENT   READY   AGE   CONTAINER
 replicaset.apps/grafana-575dd8b8d8   2         2         2       17s   grafana      grafana/grafana:12.1.0   app=grafana,pod-template-hash=575dd8b8d8
 
 NAME                           READY   STATUS    RESTARTS   AGE   IP           NODE                          NOMINATED NODE   READINESS GATES
-pod/grafana-575dd8b8d8-jhqnb   1/1     Running   0          17s   10.244.0.5   chart-testing-control-plane   <none>           <none>
-pod/grafana-575dd8b8d8-stfmb   1/1     Running   0          17s   10.244.0.6   chart-testing-control-plane   <none>           <none>
+pod/grafana-575dd8b8d8-4fn8s   1/1     Running   0          16s   10.244.0.6   chart-testing-control-plane   <none>           <none>
+pod/grafana-575dd8b8d8-4rqkk   1/1     Running   0          16s   10.244.0.5   chart-testing-control-plane   <none>           <none>
 
 NAME              TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE   SELECTOR
-service/grafana   NodePort   10.96.162.110   <none>        3000:30030/TCP   16s   app=grafana
+service/grafana   NodePort   10.96.183.142   <none>        3000:30030/TCP   16s   app=grafana
