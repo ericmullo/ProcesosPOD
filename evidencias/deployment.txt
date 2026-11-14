@@ -1,32 +1,23 @@
 Name:                   grafana
-Namespace:              grafana-demo
-CreationTimestamp:      Sat, 14 Nov 2026 12:44:42 +0000
-Labels:                 app=grafana
+Namespace:              default
+CreationTimestamp:      Sat, 14 Nov 2026 13:06:49 +0000
+Labels:                 <none>
 Annotations:            deployment.kubernetes.io/revision: 1
 Selector:               app=grafana
 Replicas:               2 desired | 2 updated | 2 total | 2 available | 0 unavailable
 StrategyType:           RollingUpdate
 MinReadySeconds:        0
-RollingUpdateStrategy:  0 max unavailable, 1 max surge
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
 Pod Template:
   Labels:  app=grafana
   Containers:
    grafana:
     Image:      grafana/grafana:12.1.0
-    Port:       3000/TCP (http)
-    Host Port:  0/TCP (http)
-    Limits:
-      cpu:     500m
-      memory:  512Mi
-    Requests:
-      cpu:      100m
-      memory:   256Mi
-    Liveness:   http-get http://:http/api/health delay=30s timeout=1s period=20s successThreshold=1 failureThreshold=3
-    Readiness:  http-get http://:http/api/health delay=10s timeout=1s period=10s successThreshold=1 failureThreshold=3
+    Port:       3000/TCP
+    Host Port:  0/TCP
     Environment:
       GF_AUTH_ANONYMOUS_ENABLED:   true
       GF_AUTH_ANONYMOUS_ORG_ROLE:  Viewer
-      GF_AUTH_DISABLE_LOGIN_FORM:  true
     Mounts:                        <none>
   Volumes:                         <none>
   Node-Selectors:                  <none>
@@ -37,8 +28,8 @@ Conditions:
   Available      True    MinimumReplicasAvailable
   Progressing    True    NewReplicaSetAvailable
 OldReplicaSets:  <none>
-NewReplicaSet:   grafana-575dd8b8d8 (2/2 replicas created)
+NewReplicaSet:   grafana-6986848976 (2/2 replicas created)
 Events:
   Type    Reason             Age   From                   Message
   ----    ------             ----  ----                   -------
-  Normal  ScalingReplicaSet  16s   deployment-controller  Scaled up replica set grafana-575dd8b8d8 from 0 to 2
+  Normal  ScalingReplicaSet  6s    deployment-controller  Scaled up replica set grafana-6986848976 from 0 to 2
