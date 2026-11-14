@@ -37,6 +37,12 @@ jobs:
           curl --fail --silent --show-error http://127.0.0.1:3000/api/health | tee evidencias/salud-http.json
       - name: Capturar pantalla real de Grafana
         run: |
+          kubectl port-forward service/grafana 3000:3000 > /tmp/grafana-captura.log 2>&1 &
+          for i in {1..30}; do
+            if curl --fail --silent --max-time 3 http://127.0.0.1:3000/api/health > /dev/null; then break; fi
+            sleep 2
+          done
+          curl --fail --silent --show-error --max-time 3 http://127.0.0.1:3000/api/health > /dev/null
           npm install --no-save playwright
           npx playwright install --with-deps chromium
           node scripts/capturar-grafana.cjs
