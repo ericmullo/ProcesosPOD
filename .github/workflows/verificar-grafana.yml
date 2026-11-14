@@ -27,22 +27,14 @@ jobs:
           kubectl describe deployment grafana > evidencias/deployment.txt
           test "$(kubectl get deployment grafana -o jsonpath='{.status.readyReplicas}')" = 2
           test "$(kubectl get replicasets -l app=grafana -o jsonpath='{.items[0].status.readyReplicas}')" = 2
-      - name: Verificar exposición HTTP
-        run: |
-          kubectl port-forward service/grafana 3000:3000 > /tmp/grafana-port-forward.log 2>&1 &
-          for i in {1..30}; do
-            if curl --fail --silent http://127.0.0.1:3000/api/health > evidencias/salud-http.json; then break; fi
-            sleep 2
-          done
-          curl --fail --silent --show-error http://127.0.0.1:3000/api/health | tee evidencias/salud-http.json
-      - name: Capturar pantalla real de Grafana
+      - name: Verificar acceso y capturar Grafana
         run: |
           kubectl port-forward service/grafana 3000:3000 > /tmp/grafana-captura.log 2>&1 &
           for i in {1..30}; do
-            if curl --fail --silent --max-time 3 http://127.0.0.1:3000/api/health > /dev/null; then break; fi
+            if curl --fail --silent --max-time 3 http://127.0.0.1:3000/api/health -o evidencias/salud-http.json && grep -q '"database"' evidencias/salud-http.json; then break; fi
             sleep 2
           done
-          curl --fail --silent --show-error --max-time 3 http://127.0.0.1:3000/api/health > /dev/null
+          grep -q '"database"' evidencias/salud-http.json
           npm install --no-save playwright
           npx playwright install --with-deps chromium
           node scripts/capturar-grafana.cjs
