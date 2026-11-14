@@ -51,7 +51,7 @@ kubectl -n grafana-demo rollout status deployment/grafana --timeout=300s
 
 ## Evidencias e informe
 
-Ver [INFORME.md](INFORME.md). Guardar capturas reales de la consola y del navegador en `evidencias/` después de ejecutar los comandos. El script [capturar-evidencias.ps1](scripts/capturar-evidencias.ps1) genera archivos de texto con el estado real del clúster y verifica la respuesta HTTP. No sustituye las capturas de pantalla.
+Ver [INFORME.md](INFORME.md) y las [evidencias](evidencias/). El flujo de GitHub Actions ejecuta el despliegue en un clúster temporal, comprueba la respuesta HTTP y guarda capturas de la interfaz y de las salidas reales de `kubectl`. Para repetir la comprobación en un equipo Windows, el script [capturar-evidencias.ps1](scripts/capturar-evidencias.ps1) genera archivos de texto con el estado del clúster y la respuesta HTTP.
 
 ## Alcance
 

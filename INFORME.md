@@ -61,13 +61,23 @@ Este ejercicio muestra la interfaz de Grafana. Para visualizar métricas reales 
 
 ## 6. Evidencias de ejecución
 
-**Estado al preparar el repositorio:** no había un clúster Kubernetes configurado ni un motor Docker activo en el equipo. El flujo de GitHub Actions `.github/workflows/verificar-grafana.yml` crea un clúster temporal con kind, ejecuta el despliegue, comprueba dos réplicas y la respuesta HTTP, captura la interfaz real en `evidencias/02-grafana.png` y verifica el escalado a tres réplicas. Los resultados se publican como artefacto del flujo y, si GitHub permite escritura al flujo, también se guardan en `evidencias/` del repositorio.
+**Ejecución verificada:** el [flujo de GitHub Actions](https://github.com/ericmullo/ProcesosPOD/actions) creó un clúster temporal con kind, desplegó Grafana, comprobó dos réplicas listas, obtuvo una respuesta válida de `/api/health`, abrió la interfaz y escaló a tres réplicas. Los archivos de evidencia se guardaron en el repositorio. El clúster de CI es temporal; la dirección `localhost` solo es accesible mientras se ejecuta en el equipo o en el runner.
+
+| Comprobación | Resultado observado | Evidencia |
+| --- | --- | --- |
+| Deployment y ReplicaSet | `2/2` Pods listos; ReplicaSet `DESIRED=2`, `READY=2` | [recursos.txt](evidencias/recursos.txt) |
+| Exposición de Grafana | Service `NodePort` `3000:30030/TCP`; `/api/health` devolvió `database: ok` | [salud-http.json](evidencias/salud-http.json) |
+| Escalado | Deployment y ReplicaSet `3/3` | [escalado.txt](evidencias/escalado.txt) |
 
 Tras iniciar Kubernetes, guardar las siguientes capturas en `evidencias/` y enlazarlas aquí:
 
-1. `01-recursos.png`: terminal con `kubectl -n grafana-demo get deployment,replicaset,pods,service -o wide`, donde se vea `2/2` y el NodePort. El flujo automático guarda además `recursos.txt`.
-2. `02-grafana.png`: captura de la interfaz real creada por el flujo automático; para una entrega local, mostrar también el navegador con la dirección `localhost:30030` o `localhost:3000` visible.
-3. `03-escalado.png`: terminal con tres Pods tras ejecutar el comando de escalado. El flujo automático guarda además `escalado.txt`.
+1. [01-recursos.png](evidencias/01-recursos.png): imagen de la salida real de `kubectl` con `2/2`, ReplicaSet y NodePort.
+2. [02-grafana.png](evidencias/02-grafana.png): captura real de la interfaz de Grafana abierta en el navegador del runner.
+3. [03-escalado.png](evidencias/03-escalado.png): imagen de la salida real de `kubectl` con tres Pods listos.
+
+![Interfaz de Grafana desplegada y expuesta mediante el Service](evidencias/02-grafana.png)
+
+Las imágenes 01 y 03 presentan las salidas reales de `kubectl` en un formato legible. Si se requiere una captura literal de una terminal local, los comandos de las secciones 3 y 4 permiten obtenerla en el propio equipo.
 
 El script `scripts/capturar-evidencias.ps1` guarda también la salida de Kubernetes y la comprobación HTTP en archivos de texto. Ejecutarlo desde la raíz del repositorio:
 

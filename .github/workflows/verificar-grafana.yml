@@ -41,12 +41,14 @@ jobs:
           npm install --no-save playwright
           npx playwright install --with-deps chromium
           node scripts/capturar-grafana.cjs
+          node scripts/capturar-salida.cjs evidencias/recursos.txt evidencias/01-recursos.png
       - name: Verificar escalado a tres réplicas
         run: |
           kubectl -n grafana-demo scale deployment/grafana --replicas=3
           kubectl -n grafana-demo rollout status deployment/grafana --timeout=600s
           kubectl -n grafana-demo get deployment,replicaset,pods -o wide | tee evidencias/escalado.txt
           test "$(kubectl -n grafana-demo get deployment grafana -o jsonpath='{.status.readyReplicas}')" = 3
+          node scripts/capturar-salida.cjs evidencias/escalado.txt evidencias/03-escalado.png
       - name: Publicar evidencia como artefacto
         if: always()
         uses: actions/upload-artifact@v4
