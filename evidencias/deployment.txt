@@ -1,6 +1,6 @@
 Name:                   grafana
 Namespace:              default
-CreationTimestamp:      Sat, 14 Nov 2026 13:06:49 +0000
+CreationTimestamp:      Sat, 14 Nov 2026 13:16:03 +0000
 Labels:                 <none>
 Annotations:            deployment.kubernetes.io/revision: 1
 Selector:               app=grafana
@@ -32,4 +32,4 @@ NewReplicaSet:   grafana-6986848976 (2/2 replicas created)
 Events:
   Type    Reason             Age   From                   Message
   ----    ------             ----  ----                   -------
-  Normal  ScalingReplicaSet  6s    deployment-controller  Scaled up replica set grafana-6986848976 from 0 to 2
+  Normal  ScalingReplicaSet  7s    deployment-controller  Scaled up replica set grafana-6986848976 from 0 to 2

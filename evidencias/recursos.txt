@@ -1,13 +1,13 @@
 NAME                      READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES                   SELECTOR
-deployment.apps/grafana   2/2     2            2           6s    grafana      grafana/grafana:12.1.0   app=grafana
+deployment.apps/grafana   2/2     2            2           7s    grafana      grafana/grafana:12.1.0   app=grafana
 
 NAME                                 DESIRED   CURRENT   READY   AGE   CONTAINERS   IMAGES                   SELECTOR
-replicaset.apps/grafana-6986848976   2         2         2       6s    grafana      grafana/grafana:12.1.0   app=grafana,pod-template-hash=6986848976
+replicaset.apps/grafana-6986848976   2         2         2       7s    grafana      grafana/grafana:12.1.0   app=grafana,pod-template-hash=6986848976
 
 NAME                           READY   STATUS    RESTARTS   AGE   IP           NODE                          NOMINATED NODE   READINESS GATES
-pod/grafana-6986848976-bk2mb   1/1     Running   0          6s    10.244.0.6   chart-testing-control-plane   <none>           <none>
-pod/grafana-6986848976-mzkng   1/1     Running   0          6s    10.244.0.5   chart-testing-control-plane   <none>           <none>
+pod/grafana-6986848976-kts5f   1/1     Running   0          7s    10.244.0.6   chart-testing-control-plane   <none>           <none>
+pod/grafana-6986848976-qk2xm   1/1     Running   0          7s    10.244.0.5   chart-testing-control-plane   <none>           <none>
 
 NAME                 TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE   SELECTOR
-service/grafana      NodePort    10.96.251.65   <none>        3000:30030/TCP   6s    app=grafana
-service/kubernetes   ClusterIP   10.96.0.1      <none>        443/TCP          26s   <none>
+service/grafana      NodePort    10.96.170.57   <none>        3000:30030/TCP   7s    app=grafana
+service/kubernetes   ClusterIP   10.96.0.1      <none>        443/TCP          27s   <none>

@@ -1,10 +1,10 @@
 NAME                      READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES                   SELECTOR
-deployment.apps/grafana   3/3     3            3           98s   grafana      grafana/grafana:12.1.0   app=grafana
+deployment.apps/grafana   3/3     3            3           41s   grafana      grafana/grafana:12.1.0   app=grafana
 
 NAME                                 DESIRED   CURRENT   READY   AGE   CONTAINERS   IMAGES                   SELECTOR
-replicaset.apps/grafana-6986848976   3         3         3       98s   grafana      grafana/grafana:12.1.0   app=grafana,pod-template-hash=6986848976
+replicaset.apps/grafana-6986848976   3         3         3       41s   grafana      grafana/grafana:12.1.0   app=grafana,pod-template-hash=6986848976
 
 NAME                           READY   STATUS    RESTARTS   AGE   IP           NODE                          NOMINATED NODE   READINESS GATES
-pod/grafana-6986848976-bk2mb   1/1     Running   0          98s   10.244.0.6   chart-testing-control-plane   <none>           <none>
-pod/grafana-6986848976-mzkng   1/1     Running   0          98s   10.244.0.5   chart-testing-control-plane   <none>           <none>
-pod/grafana-6986848976-vgm47   1/1     Running   0          1s    10.244.0.7   chart-testing-control-plane   <none>           <none>
+pod/grafana-6986848976-dtp8j   1/1     Running   0          1s    10.244.0.7   chart-testing-control-plane   <none>           <none>
+pod/grafana-6986848976-kts5f   1/1     Running   0          41s   10.244.0.6   chart-testing-control-plane   <none>           <none>
+pod/grafana-6986848976-qk2xm   1/1     Running   0          41s   10.244.0.5   chart-testing-control-plane   <none>           <none>
